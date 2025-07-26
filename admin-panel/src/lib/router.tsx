@@ -3,6 +3,8 @@ import { AdminLayout } from "../components/layout/AdminLayout";
 import { DashboardPage } from "../pages/DashboardPage";
 import { ProductsPage } from "../pages/ProductsPage";
 import { ProductDetailPage } from "../pages/ProductDetailPage";
+import { ProductAddPage } from "../pages/ProductAddPage.tsx";
+import { ProductEditPage } from "../pages/ProductEditPage.tsx";
 import { UsersPage } from "../pages/UsersPage";
 import { UserDetailPage } from "../pages/UserDetailPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
@@ -24,8 +26,16 @@ export const router = createBrowserRouter([
             element: <ProductsPage />,
           },
           {
+            path: "add",
+            element: <ProductAddPage />,
+          },
+          {
             path: ":id",
             element: <ProductDetailPage />,
+          },
+          {
+            path: ":id/edit",
+            element: <ProductEditPage />,
           },
         ],
       },

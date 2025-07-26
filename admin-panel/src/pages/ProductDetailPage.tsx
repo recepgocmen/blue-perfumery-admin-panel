@@ -16,6 +16,7 @@ import {
   Statistic,
   Divider,
   message,
+  Modal,
 } from "antd";
 import {
   ArrowLeftOutlined,
@@ -25,10 +26,12 @@ import {
   DollarOutlined,
   HeartOutlined,
   HeartFilled,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import type { AppDispatch, RootState } from "../store";
 import {
   fetchProductById,
+  deleteProduct,
   clearSelectedProduct,
   clearError,
 } from "../store/slices/productsSlice";
@@ -91,9 +94,28 @@ export const ProductDetailPage: React.FC = () => {
     }
   };
 
-  const handleDeleteProduct = () => {
-    // TODO: Implement delete functionality
-    console.log("Delete product:", product?.id);
+  const handleDeleteProduct = async () => {
+    if (!product) return;
+
+    Modal.confirm({
+      title: "Delete Product",
+      icon: <ExclamationCircleOutlined />,
+      content: `Are you sure you want to delete "${product.name}"? This action cannot be undone.`,
+      okText: "Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk: async () => {
+        try {
+          await dispatch(deleteProduct(product.id)).unwrap();
+          message.success(
+            `Product "${product.name}" has been deleted successfully`
+          );
+          navigate("/products");
+        } catch {
+          message.error("Failed to delete product. Please try again.");
+        }
+      },
+    });
   };
 
   const handleErrorDismiss = () => {

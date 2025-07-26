@@ -167,6 +167,10 @@ export const ProductsPage: React.FC = () => {
     dispatch(clearError());
   };
 
+  const handleAddProduct = () => {
+    navigate("/products/add");
+  };
+
   // Table columns configuration
   const columns = [
     {
@@ -280,7 +284,11 @@ export const ProductsPage: React.FC = () => {
             {hasActiveFilters && " (filtered)"}
           </div>
         </div>
-        <Button type="primary" icon={<PlusOutlined />}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={handleAddProduct}
+        >
           Add Product
         </Button>
       </div>
