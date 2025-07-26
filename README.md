@@ -1,4 +1,4 @@
-# Admin Panel Pro
+# Blue Perfumery Admin Panel
 
 A sophisticated admin panel built with React that empowers administrators to efficiently manage products and users with powerful data manipulation capabilities and modern UI/UX design.
 
