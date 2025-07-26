@@ -61,60 +61,266 @@ const mockUsers: User[] = [
   },
 ];
 
-const mockProducts: Product[] = [
+const mockPerfumes: Product[] = [
   {
-    id: "1",
-    name: "iPhone 15 Pro",
-    description: "Latest iPhone with Pro camera system and titanium design",
-    price: 999,
-    category: "Electronics",
+    id: "mfk-br540",
+    name: "Baccarat Rouge 540",
+    brand: "Blue Perfumery Exclusive",
+    price: 1250,
+    originalPrice: 500,
+    ml: 70,
+    gender: "unisex",
+    category: "exclusive",
     status: "active",
-    stock: 50,
-    sku: "IPH15P-128-TIT",
-    image: "https://images.unsplash.com/photo-1592899677977-9c10c23f31d0?w=400",
+    stock: 25,
+    sku: "BPE-BR540-70",
+    image:
+      "https://blueperfumery.com/wp-content/uploads/2023/05/baccarat-rouge-540.jpg",
+    notes: ["safran", "yasemin", "amber", "sedir"],
+    characteristics: ["tatlı", "odunsu", "amber", "sıcak"],
+    ageRange: { min: 20, max: 35 },
+    shopierLink: "https://www.shopier.com/blueperfumery/baccarat-rouge-540",
+    description:
+      "Blue Perfumery koleksiyonundan lüks ve sofistike bir koku. Tatlı ve odunsu notalar ile öne çıkar.",
     createdAt: "2024-01-01T10:00:00Z",
     updatedAt: "2024-01-15T14:30:00Z",
   },
   {
-    id: "2",
-    name: "MacBook Air M3",
-    description: "Powerful laptop with M3 chip and all-day battery life",
-    price: 1299,
-    category: "Electronics",
+    id: "mfk-oud-satin",
+    name: "Oud Satin Mood",
+    brand: "Blue Perfumery Premium",
+    price: 1350,
+    originalPrice: 510,
+    ml: 70,
+    gender: "unisex",
+    category: "premium",
     status: "active",
-    stock: 25,
-    sku: "MBA-M3-512-SIL",
-    image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400",
+    stock: 18,
+    sku: "BPP-OSM-70",
+    image:
+      "https://blueperfumery.com/wp-content/uploads/2023/05/oud-satin-mood.jpg",
+    notes: ["ud", "gül", "vanilya", "benjamin"],
+    characteristics: ["oryantal", "zengin", "tatlı", "odunsu"],
+    ageRange: { min: 20, max: 50 },
+    shopierLink: "https://www.shopier.com/blueperfumery/oud-satin-mood",
+    description: "Blue Perfumery'nin zengin ve yoğun oryantal kokusu.",
     createdAt: "2024-01-02T11:00:00Z",
     updatedAt: "2024-01-14T09:15:00Z",
   },
   {
-    id: "3",
-    name: "AirPods Pro",
-    description: "Wireless earbuds with active noise cancellation",
-    price: 249,
-    category: "Electronics",
+    id: "tf-lost-cherry",
+    name: "Lost Cherry",
+    brand: "Blue Perfumery Premium",
+    price: 1380,
+    originalPrice: 700,
+    ml: 100,
+    gender: "female",
+    category: "woman",
     status: "active",
-    stock: 100,
-    sku: "APP-2ND-GEN",
-    image: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=400",
+    stock: 12,
+    sku: "BPP-LC-100",
+    image:
+      "https://blueperfumery.com/wp-content/uploads/2023/05/lost-cherry.jpg",
+    notes: ["kiraz", "badem", "tonka fasulyesi", "peru balsamı"],
+    characteristics: ["tatlı", "meyveli", "gurme"],
+    ageRange: { min: 20, max: 45 },
+    shopierLink: "https://www.shopier.com/blueperfumery/lost-cherry",
+    description: "Tatlı ve baştan çıkarıcı kiraz kokusu.",
     createdAt: "2024-01-03T12:00:00Z",
     updatedAt: "2024-01-10T16:45:00Z",
   },
   {
-    id: "4",
-    name: "Apple Watch Series 9",
-    description: "Advanced fitness and health tracking smartwatch",
-    price: 399,
-    category: "Electronics",
-    status: "discontinued",
-    stock: 15,
-    sku: "AWS9-45-GPS",
-    image: "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400",
+    id: "tf-oud-wood",
+    name: "Oud Wood",
+    brand: "Blue Perfumery Luxury",
+    price: 1400,
+    originalPrice: 480,
+    ml: 50,
+    gender: "male",
+    category: "man",
+    status: "active",
+    stock: 8,
+    sku: "BPL-OW-50",
+    image: "https://blueperfumery.com/wp-content/uploads/2023/05/oud-wood.jpg",
+    notes: ["ud", "gül ağacı", "kakule", "sandal ağacı"],
+    characteristics: ["odunsu", "baharatlı", "lüks", "rafine"],
+    ageRange: { min: 25, max: 55 },
+    shopierLink: "https://www.shopier.com/blueperfumery/oud-wood",
+    description: "Sofistike ve maskülen bir ağaç kokusu.",
     createdAt: "2024-01-04T13:00:00Z",
     updatedAt: "2024-01-16T11:20:00Z",
   },
+  {
+    id: "chanel-chance",
+    name: "Chance",
+    brand: "Blue Perfumery Classic",
+    price: 900,
+    originalPrice: 200,
+    ml: 50,
+    gender: "female",
+    category: "woman",
+    status: "active",
+    stock: 35,
+    sku: "BPC-CH-50",
+    image:
+      "https://blueperfumery.com/wp-content/uploads/2023/05/chanel-chance.jpg",
+    notes: ["pembe biber", "yasemin", "paçuli"],
+    characteristics: ["çiçeksi", "ferah", "baharatlı"],
+    ageRange: { min: 19, max: 45 },
+    shopierLink: "https://www.shopier.com/blueperfumery/chance",
+    description: "Zarif ve feminen bir koku.",
+    createdAt: "2024-01-05T14:00:00Z",
+    updatedAt: "2024-01-17T10:15:00Z",
+  },
+  {
+    id: "invictus",
+    name: "Invictus",
+    brand: "Blue Perfumery Urban",
+    price: 600,
+    originalPrice: 100,
+    ml: 50,
+    gender: "male",
+    category: "man",
+    status: "active",
+    stock: 42,
+    sku: "BPU-INV-50",
+    image: "https://blueperfumery.com/wp-content/uploads/2023/05/invictus.jpg",
+    notes: ["greyfurt", "deniz", "guaiac ağacı"],
+    characteristics: ["ferah", "deniz", "odunsu"],
+    ageRange: { min: 20, max: 35 },
+    shopierLink: "https://www.shopier.com/blueperfumery/invictus",
+    description: "Taze ve maskülen bir koku",
+    createdAt: "2024-01-06T15:00:00Z",
+    updatedAt: "2024-01-18T12:30:00Z",
+  },
+  {
+    id: "nasomatto-black-afgano",
+    name: "Black Afgano",
+    brand: "Blue Perfumery Artisanal",
+    price: 1180,
+    originalPrice: 155,
+    ml: 30,
+    gender: "unisex",
+    category: "niches",
+    status: "active",
+    stock: 6,
+    sku: "BPA-BA-30",
+    image:
+      "https://blueperfumery.com/wp-content/uploads/2023/05/black-afgano.jpg",
+    notes: ["kenevir", "kahve", "ud", "tütün"],
+    characteristics: ["reçineli", "karanlık", "yoğun", "bağımlılık yapıcı"],
+    ageRange: { min: 28, max: 55 },
+    shopierLink: "https://www.shopier.com/blueperfumery/black-afgano",
+    description: "Derin ve karanlık bir bağımlılık parfümü.",
+    createdAt: "2024-01-07T16:00:00Z",
+    updatedAt: "2024-01-19T14:45:00Z",
+  },
+  {
+    id: "ysl-libre-woman",
+    name: "Libre Woman",
+    brand: "Blue Perfumery Classic",
+    price: 800,
+    originalPrice: 140,
+    ml: 50,
+    gender: "female",
+    category: "woman",
+    status: "active",
+    stock: 28,
+    sku: "BPC-LW-50",
+    image:
+      "https://blueperfumery.com/wp-content/uploads/2023/05/libre-woman.jpg",
+    notes: ["lavanta", "portakal çiçeği", "vanilya", "misk"],
+    characteristics: ["çiçeksi", "warm", "ferah"],
+    ageRange: { min: 20, max: 40 },
+    shopierLink: "https://www.shopier.com/blueperfumery/libre-woman",
+    description: "Modern ve özgür bir kadın kokusu.",
+    createdAt: "2024-01-08T17:00:00Z",
+    updatedAt: "2024-01-20T09:20:00Z",
+  },
+  {
+    id: "mancera-cedrat-boise",
+    name: "Cedrat Boise",
+    brand: "Blue Perfumery Premium",
+    price: 900,
+    originalPrice: 195,
+    ml: 120,
+    gender: "unisex",
+    category: "unisex",
+    status: "active",
+    stock: 22,
+    sku: "BPP-CB-120",
+    image:
+      "https://blueperfumery.com/wp-content/uploads/2023/05/cedrat-boise.jpg",
+    notes: ["narenciye", "sedir", "deri", "vanilya"],
+    characteristics: ["ferah", "odunsu", "narenciyeli", "modern"],
+    ageRange: { min: 22, max: 45 },
+    shopierLink: "https://www.shopier.com/blueperfumery/cedrat-boise",
+    description: "Energetic ve çarpıcı bir odunsu citrus kokusu",
+    createdAt: "2024-01-09T18:00:00Z",
+    updatedAt: "2024-01-21T11:10:00Z",
+  },
+  {
+    id: "memo-lalibela",
+    name: "Lalibela",
+    brand: "Blue Perfumery Artisanal",
+    price: 1100,
+    originalPrice: 300,
+    ml: 75,
+    gender: "unisex",
+    category: "niches",
+    status: "active",
+    stock: 14,
+    sku: "BPA-LAL-75",
+    image: "https://blueperfumery.com/wp-content/uploads/2023/05/lalibela.jpg",
+    notes: ["akgünlük", "vanilya", "misk", "badem"],
+    characteristics: ["günlük", "ruhani", "tatlı", "reçineli"],
+    ageRange: { min: 28, max: 55 },
+    shopierLink: "https://www.shopier.com/blueperfumery/lalibela",
+    description: "Ruhani ve derin bir koku deneyimi",
+    createdAt: "2024-01-10T19:00:00Z",
+    updatedAt: "2024-01-22T13:55:00Z",
+  },
 ];
+
+// Helper functions
+export function getPerfumesByGender(gender: string): Product[] {
+  if (gender === "niches") {
+    return mockPerfumes.filter(
+      (p) =>
+        p.category === "niches" ||
+        p.brand.includes("Exclusive") ||
+        p.brand.includes("Artisanal")
+    );
+  }
+  if (gender === "men" || gender === "male") {
+    return mockPerfumes.filter(
+      (p) => p.gender === "male" || p.gender === "unisex"
+    );
+  }
+  if (gender === "women" || gender === "female") {
+    return mockPerfumes.filter(
+      (p) => p.gender === "female" || p.gender === "unisex"
+    );
+  }
+  return mockPerfumes;
+}
+
+export function searchPerfumesByName(query: string): Product[] {
+  const lowercaseQuery = query.toLowerCase();
+  return mockPerfumes.filter(
+    (p) =>
+      p.name.toLowerCase().includes(lowercaseQuery) ||
+      p.brand.toLowerCase().includes(lowercaseQuery) ||
+      p.characteristics.some((char) =>
+        char.toLowerCase().includes(lowercaseQuery)
+      ) ||
+      p.notes.some((note) => note.toLowerCase().includes(lowercaseQuery))
+  );
+}
+
+export function getPerfumeById(id: string): Product | undefined {
+  return mockPerfumes.find((p) => p.id === id);
+}
 
 // Utility functions
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -139,15 +345,34 @@ const filterUsers = (users: User[], filters: UserFilters) => {
 const filterProducts = (products: Product[], filters: ProductFilters) => {
   return products.filter((product) => {
     if (filters.category && product.category !== filters.category) return false;
+    if (filters.gender && product.gender !== filters.gender) return false;
+    if (filters.brand && product.brand !== filters.brand) return false;
     if (filters.status && product.status !== filters.status) return false;
     if (filters.priceMin && product.price < filters.priceMin) return false;
     if (filters.priceMax && product.price > filters.priceMax) return false;
+    if (filters.characteristics && filters.characteristics.length > 0) {
+      const hasCharacteristic = filters.characteristics.some((char) =>
+        product.characteristics.includes(char)
+      );
+      if (!hasCharacteristic) return false;
+    }
+    if (filters.notes && filters.notes.length > 0) {
+      const hasNote = filters.notes.some((note) =>
+        product.notes.includes(note)
+      );
+      if (!hasNote) return false;
+    }
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       return (
         product.name.toLowerCase().includes(searchLower) ||
+        product.brand.toLowerCase().includes(searchLower) ||
         product.description.toLowerCase().includes(searchLower) ||
-        product.sku.toLowerCase().includes(searchLower)
+        product.sku.toLowerCase().includes(searchLower) ||
+        product.characteristics.some((char) =>
+          char.toLowerCase().includes(searchLower)
+        ) ||
+        product.notes.some((note) => note.toLowerCase().includes(searchLower))
       );
     }
     return true;
@@ -304,7 +529,7 @@ export const productApi = {
   ): Promise<PaginatedResponse<Product>> {
     await delay(600);
 
-    let filteredProducts = filterProducts(mockProducts, filters);
+    let filteredProducts = filterProducts(mockPerfumes, filters);
     filteredProducts = sortData(filteredProducts, sort);
     const paginatedResult = paginateData(filteredProducts, pagination);
 
@@ -320,7 +545,7 @@ export const productApi = {
   async getProduct(id: string): Promise<ApiResponse<Product>> {
     await delay(300);
 
-    const product = mockProducts.find((p) => p.id === id);
+    const product = mockPerfumes.find((p) => p.id === id);
     if (!product) {
       throw new Error("Product not found");
     }
@@ -342,7 +567,7 @@ export const productApi = {
       updatedAt: new Date().toISOString(),
     };
 
-    mockProducts.push(newProduct);
+    mockPerfumes.push(newProduct);
 
     return {
       data: newProduct,
@@ -354,18 +579,18 @@ export const productApi = {
   async updateProduct(data: UpdateProductData): Promise<ApiResponse<Product>> {
     await delay(700);
 
-    const productIndex = mockProducts.findIndex((p) => p.id === data.id);
+    const productIndex = mockPerfumes.findIndex((p) => p.id === data.id);
     if (productIndex === -1) {
       throw new Error("Product not found");
     }
 
     const updatedProduct: Product = {
-      ...mockProducts[productIndex],
+      ...mockPerfumes[productIndex],
       ...data,
       updatedAt: new Date().toISOString(),
     };
 
-    mockProducts[productIndex] = updatedProduct;
+    mockPerfumes[productIndex] = updatedProduct;
 
     return {
       data: updatedProduct,
@@ -377,12 +602,12 @@ export const productApi = {
   async deleteProduct(id: string): Promise<ApiResponse<{ id: string }>> {
     await delay(500);
 
-    const productIndex = mockProducts.findIndex((p) => p.id === id);
+    const productIndex = mockPerfumes.findIndex((p) => p.id === id);
     if (productIndex === -1) {
       throw new Error("Product not found");
     }
 
-    mockProducts.splice(productIndex, 1);
+    mockPerfumes.splice(productIndex, 1);
 
     return {
       data: { id },
@@ -408,10 +633,10 @@ export const dashboardApi = {
 
     const stats = {
       totalUsers: mockUsers.length,
-      totalProducts: mockProducts.length,
+      totalProducts: mockPerfumes.length,
       activeUsers: mockUsers.filter((u) => u.status === "active").length,
-      activeProducts: mockProducts.filter((p) => p.status === "active").length,
-      revenue: mockProducts.reduce((sum, p) => sum + p.price * p.stock, 0),
+      activeProducts: mockPerfumes.filter((p) => p.status === "active").length,
+      revenue: mockPerfumes.reduce((sum, p) => sum + p.price * p.stock, 0),
       growth: 12.5, // Mock growth percentage
     };
 

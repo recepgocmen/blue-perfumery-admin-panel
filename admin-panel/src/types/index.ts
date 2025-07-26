@@ -23,30 +23,62 @@ export interface UpdateUserData extends Partial<CreateUserData> {
   id: string;
 }
 
-// Product types
+// Perfume/Product types
 export interface Product {
   id: string;
   name: string;
+  brand: string;
   description: string;
   price: number;
-  category: string;
+  originalPrice?: number;
+  ml: number; // Volume in milliliters
+  gender: "male" | "female" | "unisex";
+  category:
+    | "woman"
+    | "man"
+    | "unisex"
+    | "niches"
+    | "urban"
+    | "classic"
+    | "luxury"
+    | "premium"
+    | "exclusive"
+    | "artisanal";
   status: "active" | "inactive" | "discontinued";
   stock: number;
   sku: string;
   image?: string;
+  notes: string[]; // Fragrance notes
+  characteristics: string[]; // Scent characteristics
+  ageRange: {
+    min: number;
+    max: number;
+  };
+  shopierLink?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateProductData {
   name: string;
+  brand: string;
   description: string;
   price: number;
-  category: string;
+  originalPrice?: number;
+  ml: number;
+  gender: Product["gender"];
+  category: Product["category"];
   status: Product["status"];
   stock: number;
   sku: string;
   image?: string;
+  notes: string[];
+  characteristics: string[];
+  ageRange: {
+    min: number;
+    max: number;
+  };
+  shopierLink?: string;
 }
 
 export interface UpdateProductData extends Partial<CreateProductData> {
@@ -77,10 +109,14 @@ export interface UserFilters {
 
 export interface ProductFilters {
   category?: string;
+  gender?: Product["gender"];
+  brand?: string;
   status?: Product["status"];
   search?: string;
   priceMin?: number;
   priceMax?: number;
+  characteristics?: string[];
+  notes?: string[];
 }
 
 // Generic types

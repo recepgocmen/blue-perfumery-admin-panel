@@ -13,6 +13,7 @@ import {
   message,
   Row,
   Col,
+  Divider,
 } from "antd";
 import {
   ArrowLeftOutlined,
@@ -40,12 +41,12 @@ export const ProductAddPage: React.FC = () => {
   const handleSubmit = async (values: CreateProductData) => {
     try {
       const result = await dispatch(createProduct(values)).unwrap();
-      message.success(
-        `Product "${result.name}" has been created successfully!`
-      );
+      message.success(`Parfüm "${result.name}" başarıyla oluşturuldu!`);
       navigate(`/products/${result.id}`);
     } catch {
-      message.error("Failed to create product. Please try again.");
+      message.error(
+        "Parfüm oluşturulurken hata oluştu. Lütfen tekrar deneyin."
+      );
     }
   };
 
@@ -53,22 +54,32 @@ export const ProductAddPage: React.FC = () => {
     form.resetFields();
   };
 
-  // Generate SKU based on name
-  const generateSKU = (name: string) => {
-    const cleanName = name
+  // Generate SKU based on brand and name
+  const generateSKU = (brand: string, name: string) => {
+    const brandCode = brand
+      .split(" ")
+      .map((word) => word.substring(0, 3).toUpperCase())
+      .join("");
+    const nameCode = name
       .toUpperCase()
       .replace(/[^A-Z0-9]/g, "")
-      .substring(0, 8);
-    const randomSuffix = Math.floor(Math.random() * 1000)
+      .substring(0, 6);
+    const randomSuffix = Math.floor(Math.random() * 100)
       .toString()
-      .padStart(3, "0");
-    return `${cleanName}-${randomSuffix}`;
+      .padStart(2, "0");
+    return `${brandCode}-${nameCode}-${randomSuffix}`;
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value;
-    if (name.length >= 3) {
-      const sku = generateSKU(name);
+  const handleFormValuesChange = (
+    changedValues: Partial<CreateProductData>,
+    allValues: CreateProductData
+  ) => {
+    if (
+      (changedValues.brand || changedValues.name) &&
+      allValues.brand &&
+      allValues.name
+    ) {
+      const sku = generateSKU(allValues.brand, allValues.name);
       form.setFieldValue("sku", sku);
     }
   };
@@ -79,10 +90,10 @@ export const ProductAddPage: React.FC = () => {
       <div style={{ marginBottom: 24 }}>
         <Space>
           <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
-            Back
+            Geri
           </Button>
           <Button type="link" onClick={() => navigate("/products")}>
-            All Products
+            Tüm Parfümler
           </Button>
         </Space>
       </div>
@@ -91,7 +102,7 @@ export const ProductAddPage: React.FC = () => {
       <div style={{ marginBottom: 24 }}>
         <Title level={2} style={{ margin: 0 }}>
           <PlusOutlined style={{ marginRight: 8 }} />
-          Add New Product
+          Yeni Parfüm Ekle
         </Title>
       </div>
 
@@ -101,169 +112,401 @@ export const ProductAddPage: React.FC = () => {
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
+          onValuesChange={handleFormValuesChange}
           autoComplete="off"
           initialValues={{
             status: "active",
+            gender: "unisex",
+            category: "premium",
             stock: 0,
             price: 0,
+            ml: 50,
+            ageRange: { min: 20, max: 45 },
+            notes: [],
+            characteristics: [],
           }}
         >
           <Row gutter={[24, 0]}>
-            {/* Left Column */}
+            {/* Left Column - Basic Info */}
             <Col xs={24} lg={12}>
+              <Title level={4}>Temel Bilgiler</Title>
+
               <Form.Item
-                label="Product Name"
+                label="Parfüm Adı"
                 name="name"
                 rules={[
-                  { required: true, message: "Please enter the product name" },
-                  { min: 2, message: "Name must be at least 2 characters" },
+                  { required: true, message: "Lütfen parfüm adını girin" },
+                  { min: 2, message: "Parfüm adı en az 2 karakter olmalı" },
                   {
                     max: 100,
-                    message: "Name must be less than 100 characters",
+                    message: "Parfüm adı en fazla 100 karakter olmalı",
                   },
                 ]}
               >
-                <Input
-                  placeholder="Enter product name"
-                  onChange={handleNameChange}
-                />
+                <Input placeholder="Parfüm adını girin" />
               </Form.Item>
 
               <Form.Item
-                label="Description"
+                label="Marka"
+                name="brand"
+                rules={[{ required: true, message: "Lütfen marka seçin" }]}
+              >
+                <Select placeholder="Marka seçin">
+                  <Option value="Blue Perfumery Exclusive">
+                    Blue Perfumery Exclusive
+                  </Option>
+                  <Option value="Blue Perfumery Premium">
+                    Blue Perfumery Premium
+                  </Option>
+                  <Option value="Blue Perfumery Luxury">
+                    Blue Perfumery Luxury
+                  </Option>
+                  <Option value="Blue Perfumery Classic">
+                    Blue Perfumery Classic
+                  </Option>
+                  <Option value="Blue Perfumery Urban">
+                    Blue Perfumery Urban
+                  </Option>
+                  <Option value="Blue Perfumery Artisanal">
+                    Blue Perfumery Artisanal
+                  </Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Açıklama"
                 name="description"
                 rules={[
-                  { required: true, message: "Please enter a description" },
-                  {
-                    min: 10,
-                    message: "Description must be at least 10 characters",
-                  },
+                  { required: true, message: "Lütfen açıklama girin" },
+                  { min: 10, message: "Açıklama en az 10 karakter olmalı" },
                   {
                     max: 500,
-                    message: "Description must be less than 500 characters",
+                    message: "Açıklama en fazla 500 karakter olmalı",
                   },
                 ]}
               >
                 <TextArea
                   rows={4}
-                  placeholder="Enter product description"
+                  placeholder="Parfüm açıklamasını girin"
                   showCount
                   maxLength={500}
                 />
               </Form.Item>
 
-              <Form.Item
-                label="Category"
-                name="category"
-                rules={[
-                  { required: true, message: "Please select a category" },
-                ]}
-              >
-                <Select placeholder="Select a category">
-                  <Option value="Electronics">Electronics</Option>
-                  <Option value="Clothing">Clothing</Option>
-                  <Option value="Books">Books</Option>
-                  <Option value="Home & Garden">Home & Garden</Option>
-                  <Option value="Sports">Sports</Option>
-                  <Option value="Toys">Toys</Option>
-                  <Option value="Health & Beauty">Health & Beauty</Option>
-                  <Option value="Automotive">Automotive</Option>
-                  <Option value="Food & Beverages">Food & Beverages</Option>
-                  <Option value="Other">Other</Option>
-                </Select>
-              </Form.Item>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    label="Cinsiyet"
+                    name="gender"
+                    rules={[
+                      { required: true, message: "Lütfen cinsiyet seçin" },
+                    ]}
+                  >
+                    <Select>
+                      <Option value="male">Erkek</Option>
+                      <Option value="female">Kadın</Option>
+                      <Option value="unisex">Unisex</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    label="Kategori"
+                    name="category"
+                    rules={[
+                      { required: true, message: "Lütfen kategori seçin" },
+                    ]}
+                  >
+                    <Select>
+                      <Option value="woman">Kadın</Option>
+                      <Option value="man">Erkek</Option>
+                      <Option value="unisex">Unisex</Option>
+                      <Option value="niches">Niche</Option>
+                      <Option value="urban">Urban</Option>
+                      <Option value="classic">Classic</Option>
+                      <Option value="luxury">Luxury</Option>
+                      <Option value="premium">Premium</Option>
+                      <Option value="exclusive">Exclusive</Option>
+                      <Option value="artisanal">Artisanal</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
             </Col>
 
-            {/* Right Column */}
+            {/* Right Column - Pricing & Stock */}
             <Col xs={24} lg={12}>
-              <Form.Item
-                label="Price ($)"
-                name="price"
-                rules={[
-                  { required: true, message: "Please enter the price" },
-                  {
-                    type: "number",
-                    min: 0.01,
-                    message: "Price must be greater than 0",
-                  },
-                  {
-                    type: "number",
-                    max: 999999,
-                    message: "Price must be less than $999,999",
-                  },
-                ]}
-              >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  placeholder="0.00"
-                  min={0.01}
-                  max={999999}
-                  step={0.01}
-                  precision={2}
-                  formatter={(value) =>
-                    `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
-                />
-              </Form.Item>
+              <Title level={4}>Fiyat ve Stok</Title>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    label="Fiyat (₺)"
+                    name="price"
+                    rules={[
+                      { required: true, message: "Lütfen fiyat girin" },
+                      {
+                        type: "number",
+                        min: 1,
+                        message: "Fiyat 0'dan büyük olmalı",
+                      },
+                      {
+                        type: "number",
+                        max: 50000,
+                        message: "Fiyat 50,000 TL'den az olmalı",
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      style={{ width: "100%" }}
+                      placeholder="0"
+                      min={1}
+                      max={50000}
+                      formatter={(value) =>
+                        `₺ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                      }
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item label="Orijinal Fiyat (₺)" name="originalPrice">
+                    <InputNumber
+                      style={{ width: "100%" }}
+                      placeholder="0"
+                      min={0}
+                      max={50000}
+                      formatter={(value) =>
+                        `₺ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                      }
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    label="Hacim (ml)"
+                    name="ml"
+                    rules={[
+                      { required: true, message: "Lütfen hacim girin" },
+                      {
+                        type: "number",
+                        min: 1,
+                        message: "Hacim 0'dan büyük olmalı",
+                      },
+                      {
+                        type: "number",
+                        max: 1000,
+                        message: "Hacim 1000ml'den az olmalı",
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      style={{ width: "100%" }}
+                      placeholder="50"
+                      min={1}
+                      max={1000}
+                      addonAfter="ml"
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    label="Başlangıç Stok"
+                    name="stock"
+                    rules={[
+                      { required: true, message: "Lütfen stok girin" },
+                      {
+                        type: "number",
+                        min: 0,
+                        message: "Stok negatif olamaz",
+                      },
+                      {
+                        type: "number",
+                        max: 9999,
+                        message: "Stok 9999'dan az olmalı",
+                      },
+                    ]}
+                  >
+                    <InputNumber
+                      style={{ width: "100%" }}
+                      placeholder="0"
+                      min={0}
+                      max={9999}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
 
               <Form.Item
-                label="Initial Stock"
-                name="stock"
-                rules={[
-                  { required: true, message: "Please enter the initial stock" },
-                  {
-                    type: "number",
-                    min: 0,
-                    message: "Stock cannot be negative",
-                  },
-                  {
-                    type: "number",
-                    max: 999999,
-                    message: "Stock must be less than 999,999",
-                  },
-                ]}
-              >
-                <InputNumber
-                  style={{ width: "100%" }}
-                  placeholder="0"
-                  min={0}
-                  max={999999}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="SKU (Stock Keeping Unit)"
+                label="SKU (Stok Kodu)"
                 name="sku"
                 rules={[
-                  { required: true, message: "Please enter the SKU" },
-                  { min: 3, message: "SKU must be at least 3 characters" },
-                  { max: 50, message: "SKU must be less than 50 characters" },
+                  { required: true, message: "Lütfen SKU girin" },
+                  { min: 3, message: "SKU en az 3 karakter olmalı" },
+                  { max: 50, message: "SKU en fazla 50 karakter olmalı" },
                 ]}
               >
                 <Input
-                  placeholder="Will be auto-generated from name"
+                  placeholder="Marka ve ürün adından otomatik oluşturulacak"
                   disabled={loading}
                 />
               </Form.Item>
 
               <Form.Item
-                label="Status"
+                label="Durum"
                 name="status"
-                rules={[{ required: true, message: "Please select a status" }]}
+                rules={[{ required: true, message: "Lütfen durum seçin" }]}
               >
                 <Select>
-                  <Option value="active">Active</Option>
-                  <Option value="inactive">Inactive</Option>
-                  <Option value="discontinued">Discontinued</Option>
+                  <Option value="active">Aktif</Option>
+                  <Option value="inactive">Pasif</Option>
+                  <Option value="discontinued">Üretimi Durduruldu</Option>
                 </Select>
               </Form.Item>
 
               <Form.Item
-                label="Image URL (Optional)"
+                label="Görsel URL (Opsiyonel)"
                 name="image"
-                rules={[{ type: "url", message: "Please enter a valid URL" }]}
+                rules={[
+                  { type: "url", message: "Lütfen geçerli bir URL girin" },
+                ]}
               >
-                <Input placeholder="https://example.com/image.jpg" />
+                <Input placeholder="https://blueperfumery.com/..." />
+              </Form.Item>
+
+              <Form.Item
+                label="Shopier Link (Opsiyonel)"
+                name="shopierLink"
+                rules={[
+                  { type: "url", message: "Lütfen geçerli bir URL girin" },
+                ]}
+              >
+                <Input placeholder="https://www.shopier.com/blueperfumery/..." />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Divider />
+
+          {/* Fragrance Details */}
+          <Row gutter={[24, 0]}>
+            <Col xs={24} lg={12}>
+              <Title level={4}>Koku Notaları</Title>
+
+              <Form.Item
+                label="Notalar"
+                name="notes"
+                rules={[
+                  { required: true, message: "Lütfen en az bir nota ekleyin" },
+                ]}
+              >
+                <Select
+                  mode="tags"
+                  placeholder="Notaları girin (Enter ile ekleyin)"
+                  tokenSeparators={[","]}
+                >
+                  <Option value="amber">Amber</Option>
+                  <Option value="vanilya">Vanilya</Option>
+                  <Option value="sedir">Sedir</Option>
+                  <Option value="gül">Gül</Option>
+                  <Option value="yasemin">Yasemin</Option>
+                  <Option value="ud">Ud</Option>
+                  <Option value="sandal ağacı">Sandal Ağacı</Option>
+                  <Option value="lavanta">Lavanta</Option>
+                  <Option value="bergamot">Bergamot</Option>
+                  <Option value="portakal çiçeği">Portakal Çiçeği</Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Özellikler"
+                name="characteristics"
+                rules={[
+                  {
+                    required: true,
+                    message: "Lütfen en az bir özellik ekleyin",
+                  },
+                ]}
+              >
+                <Select
+                  mode="tags"
+                  placeholder="Özellikleri girin (Enter ile ekleyin)"
+                  tokenSeparators={[","]}
+                >
+                  <Option value="tatlı">Tatlı</Option>
+                  <Option value="odunsu">Odunsu</Option>
+                  <Option value="çiçeksi">Çiçeksi</Option>
+                  <Option value="ferah">Ferah</Option>
+                  <Option value="baharatlı">Baharatlı</Option>
+                  <Option value="oryantal">Oryantal</Option>
+                  <Option value="meyveli">Meyveli</Option>
+                  <Option value="deri">Deri</Option>
+                  <Option value="deniz">Deniz</Option>
+                  <Option value="zarif">Zarif</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <Title level={4}>Yaş Aralığı</Title>
+
+              <Form.Item label="Yaş Aralığı">
+                <Input.Group>
+                  <Row gutter={8}>
+                    <Col span={11}>
+                      <Form.Item
+                        name={["ageRange", "min"]}
+                        rules={[
+                          { required: true, message: "Min yaş gerekli" },
+                          {
+                            type: "number",
+                            min: 16,
+                            max: 80,
+                            message: "16-80 arası olmalı",
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          placeholder="Min"
+                          min={16}
+                          max={80}
+                          style={{ width: "100%" }}
+                          addonAfter="yaş"
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col
+                      span={2}
+                      style={{ textAlign: "center", lineHeight: "32px" }}
+                    >
+                      -
+                    </Col>
+                    <Col span={11}>
+                      <Form.Item
+                        name={["ageRange", "max"]}
+                        rules={[
+                          { required: true, message: "Max yaş gerekli" },
+                          {
+                            type: "number",
+                            min: 16,
+                            max: 80,
+                            message: "16-80 arası olmalı",
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          placeholder="Max"
+                          min={16}
+                          max={80}
+                          style={{ width: "100%" }}
+                          addonAfter="yaş"
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Input.Group>
               </Form.Item>
             </Col>
           </Row>
@@ -272,7 +515,7 @@ export const ProductAddPage: React.FC = () => {
           <div style={{ marginTop: 32, textAlign: "center" }}>
             <Space size="large">
               <Button onClick={handleReset} disabled={loading}>
-                Reset Form
+                Formu Sıfırla
               </Button>
               <Button
                 type="primary"
@@ -281,7 +524,7 @@ export const ProductAddPage: React.FC = () => {
                 loading={loading}
                 size="large"
               >
-                Create Product
+                Parfüm Oluştur
               </Button>
             </Space>
           </div>
