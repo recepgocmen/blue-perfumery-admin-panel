@@ -43,25 +43,25 @@ export const selectProductsSortParams = createSelector(
 
 // Computed selectors
 export const selectProductById = createSelector(
-  [selectProducts, (state: RootState, productId: string) => productId],
+  [selectProducts, (_state: RootState, productId: string) => productId],
   (products, productId) => products.find((product) => product.id === productId)
 );
 
 // Perfume-specific selectors
 export const selectProductsByCategory = createSelector(
-  [selectProducts, (state: RootState, category: string) => category],
+  [selectProducts, (_state: RootState, category: string) => category],
   (products, category) =>
     products.filter((product: Product) => product.category === category)
 );
 
 export const selectProductsByGender = createSelector(
-  [selectProducts, (state: RootState, gender: string) => gender],
+  [selectProducts, (_state: RootState, gender: string) => gender],
   (products, gender) =>
     products.filter((product: Product) => product.gender === gender)
 );
 
 export const selectLowStockProducts = createSelector(
-  [selectProducts, (state: RootState, threshold: number = 10) => threshold],
+  [selectProducts, (_state: RootState, threshold: number = 10) => threshold],
   (products, threshold) =>
     products.filter((product: Product) => product.stock <= threshold)
 );
@@ -185,7 +185,7 @@ export const selectFilteredProducts = createSelector(
 
 // Search products by query - memoized for performance
 export const selectSearchedProducts = createSelector(
-  [selectProducts, (state: RootState, searchQuery: string) => searchQuery],
+  [selectProducts, (_state: RootState, searchQuery: string) => searchQuery],
   (products, searchQuery) => {
     if (!searchQuery) return products;
 

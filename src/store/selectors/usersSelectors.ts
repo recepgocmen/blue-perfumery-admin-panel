@@ -42,7 +42,7 @@ export const selectUsersSortParams = createSelector(
 
 // Computed selectors
 export const selectUserById = createSelector(
-  [selectUsers, (state: RootState, userId: string) => userId],
+  [selectUsers, (_state: RootState, userId: string) => userId],
   (users, userId) => users.find((user) => user.id === userId)
 );
 
@@ -51,6 +51,6 @@ export const selectActiveUsers = createSelector([selectUsers], (users) =>
 );
 
 export const selectUsersByRole = createSelector(
-  [selectUsers, (state: RootState, role: string) => role],
+  [selectUsers, (_state: RootState, role: string) => role],
   (users, role) => users.filter((user) => user.role === role)
 );

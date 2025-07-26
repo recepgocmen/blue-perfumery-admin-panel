@@ -29,14 +29,14 @@ export const selectFavoritesCount = createSelector(
 
 // Check if a specific product is favorited - following Context7 selector patterns
 export const selectIsProductFavorited = createSelector(
-  [selectFavoriteProducts, (state: RootState, productId: string) => productId],
+  [selectFavoriteProducts, (_state: RootState, productId: string) => productId],
   (favoriteProducts, productId) =>
     favoriteProducts.some((product: Product) => product.id === productId)
 );
 
 // Get favorite products by category
 export const selectFavoriteProductsByCategory = createSelector(
-  [selectFavoriteProducts, (state: RootState, category: string) => category],
+  [selectFavoriteProducts, (_state: RootState, category: string) => category],
   (favoriteProducts, category) =>
     favoriteProducts.filter((product: Product) => product.category === category)
 );
