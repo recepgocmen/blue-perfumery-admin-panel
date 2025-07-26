@@ -1,0 +1,272 @@
+# Admin Panel - Cursor Rules
+
+## 📋 Project Overview
+
+This is an admin panel for managing products and users. The application supports listing, viewing details, editing, and deleting products and users. The project uses mock data instead of a real API.
+
+## 🎯 Core Technical Requirements
+
+### 1. Tech Stack - MUST USE
+
+- **Frontend**: React 19+ with TypeScript
+- **Build Tool**: Vite 7+
+- **State Management**: TanStack React Query for cache management and mutations
+- **Routing**: React Router for page transitions and dynamic routing
+- **UI Library**: Ant Design with custom token structure
+- **Mock API**: Complete mock service for all functional requirements
+
+### 2. Project Structure - ENFORCE
+
+```
+src/
+├── components/         # Reusable UI components
+├── hooks/             # Custom React hooks (React Query hooks here)
+├── lib/               # Core configuration (query-client, router, theme)
+├── pages/             # Page components
+├── services/          # API services and mock data
+├── types/             # TypeScript definitions
+├── context/           # React context providers
+└── utils/             # Utility functions
+```
+
+## 🏗️ Development Principles
+
+### Code Quality & Clean Code (CRITICAL)
+
+- **Single Responsibility**: Each component/function should have one clear purpose
+- **TypeScript First**: All code must be fully typed, no `any` types
+- **Consistent Naming**: Use descriptive, consistent naming conventions
+- **Component Composition**: Prefer composition over inheritance
+- **Pure Functions**: Avoid side effects where possible
+- **Error Handling**: Implement proper error boundaries and error states
+
+### Performance & Optimization (CRITICAL)
+
+- **React.memo**: Use for expensive components that re-render frequently
+- **useMemo/useCallback**: Optimize expensive calculations and function references
+- **Code Splitting**: Implement lazy loading for pages and heavy components
+- **Query Optimization**: Use TanStack Query's caching and invalidation properly
+- **Bundle Analysis**: Keep bundle size minimal, analyze imports
+- **Avoid Prop Drilling**: Use React Context or state management appropriately
+
+### Responsive & Accessibility (CRITICAL)
+
+- **Mobile First**: Design for mobile, enhance for desktop
+- **Ant Design Grid**: Use responsive grid system (xs, sm, md, lg, xl)
+- **Semantic HTML**: Use proper HTML elements and ARIA attributes
+- **Keyboard Navigation**: Ensure all interactive elements are keyboard accessible
+- **Screen Reader Support**: Provide proper labels and descriptions
+- **Color Contrast**: Meet WCAG 2.1 AA standards
+
+## 🛠️ Implementation Guidelines
+
+### TanStack React Query - MANDATORY
+
+```typescript
+// ✅ Correct: Use proper query keys and error handling
+const { data, isLoading, error } = useQuery({
+  queryKey: ["products", filters],
+  queryFn: () => productApi.getProducts(filters),
+  staleTime: 5 * 60 * 1000,
+  onError: (error) => handleError(error),
+});
+
+// ✅ Correct: Use mutations with optimistic updates
+const mutation = useMutation({
+  mutationFn: productApi.createProduct,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["products"] });
+    notification.success({ message: "Product created successfully" });
+  },
+});
+```
+
+### Ant Design Theming - REQUIRED
+
+```typescript
+// ✅ Use custom tokens consistently
+const theme: ThemeConfig = {
+  token: {
+    colorPrimary: "#1677ff",
+    borderRadius: 6,
+    fontSize: 14,
+  },
+  components: {
+    Button: { borderRadius: 6 },
+    Table: { headerBg: "#fafafa" },
+  },
+};
+
+// ✅ Use design tokens in components
+const { token } = theme.useToken();
+```
+
+### React Router - ENFORCE
+
+```typescript
+// ✅ Use proper router structure with loaders
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <DashboardPage /> },
+      { path: "products/:id", element: <ProductDetailPage /> },
+    ],
+  },
+]);
+```
+
+## 📝 Code Standards
+
+### Component Structure
+
+```typescript
+// ✅ Preferred component structure
+interface ComponentProps {
+  title: string
+  onSubmit: (data: FormData) => void
+}
+
+export const Component: React.FC<ComponentProps> = ({ title, onSubmit }) => {
+  // 1. Hooks at the top
+  const { data, isLoading } = useQuery(...)
+  const [state, setState] = useState(...)
+
+  // 2. Event handlers
+  const handleSubmit = useCallback((data: FormData) => {
+    onSubmit(data)
+  }, [onSubmit])
+
+  // 3. Early returns for loading/error states
+  if (isLoading) return <Spin />
+  if (error) return <ErrorBoundary />
+
+  // 4. Main render
+  return (
+    <Card title={title}>
+      {/* Component content */}
+    </Card>
+  )
+}
+```
+
+### TypeScript Requirements
+
+```typescript
+// ✅ Define proper interfaces
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "user" | "moderator";
+  status: "active" | "inactive" | "banned";
+}
+
+// ✅ Use generic types for API responses
+interface ApiResponse<T> {
+  data: T;
+  message: string;
+  success: boolean;
+}
+```
+
+### Error Handling
+
+```typescript
+// ✅ Implement proper error boundaries
+const ErrorBoundary: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  return (
+    <Result
+      status="error"
+      title="Something went wrong"
+      extra={<Button onClick={() => window.location.reload()}>Retry</Button>}
+    />
+  );
+};
+```
+
+## 🎨 UI/UX Guidelines
+
+### Ant Design Best Practices
+
+- Use consistent spacing with design tokens
+- Implement proper loading states with Skeleton/Spin
+- Use appropriate feedback (notifications, messages)
+- Follow Ant Design's design principles
+- Implement proper form validation
+
+### Responsive Design
+
+```typescript
+// ✅ Use Ant Design's responsive props
+<Row gutter={[16, 16]}>
+  <Col xs={24} sm={12} md={8} lg={6}>
+    <Card>Content</Card>
+  </Col>
+</Row>
+```
+
+## 🚫 Anti-Patterns (AVOID)
+
+### ❌ Performance Anti-Patterns
+
+- Creating objects/functions in render
+- Unnecessary re-renders
+- Heavy computations in render
+- Not memoizing expensive operations
+
+### ❌ Code Quality Anti-Patterns
+
+- Using `any` type
+- Prop drilling more than 2 levels
+- Large components (>200 lines)
+- Mixing business logic with UI logic
+
+### ❌ React Query Anti-Patterns
+
+- Not using proper query keys
+- Fetching in useEffect instead of useQuery
+- Not handling loading/error states
+- Overusing refetchOnWindowFocus
+
+## 🔧 Development Workflow
+
+### Before Writing Code
+
+1. Check if component already exists
+2. Define TypeScript interfaces first
+3. Plan component structure and props
+4. Consider performance implications
+5. Ensure accessibility requirements
+
+### Code Review Checklist
+
+- [ ] TypeScript types are properly defined
+- [ ] Components are performant (memo/callback usage)
+- [ ] Accessibility attributes are present
+- [ ] Error states are handled
+- [ ] Loading states are implemented
+- [ ] Responsive design is tested
+- [ ] Code follows project structure
+
+### Testing Considerations
+
+- Components should be testable in isolation
+- Mock API responses appropriately
+- Test keyboard navigation
+- Test responsive breakpoints
+- Test error scenarios
+
+## 📚 Resources & References
+
+- [React Query Best Practices](https://tkdodo.eu/blog/practical-react-query)
+- [Ant Design Documentation](https://ant.design/)
+- [React Router Documentation](https://reactrouter.com/)
+- [Web Accessibility Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+
+---
+
+**Remember**: Every line of code should consider performance, accessibility, and maintainability. When in doubt, choose the solution that is more readable and maintainable.
