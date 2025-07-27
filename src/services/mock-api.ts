@@ -75,7 +75,7 @@ const mockPerfumes: Product[] = [
     stock: 25,
     sku: "BPE-BR540-70",
     image:
-      "https://blueperfumery.com/wp-content/uploads/2023/05/baccarat-rouge-540.jpg",
+      "https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop&crop=center",
     notes: ["safran", "yasemin", "amber", "sedir"],
     characteristics: ["tatlı", "odunsu", "amber", "sıcak"],
     ageRange: { min: 20, max: 35 },
@@ -98,7 +98,7 @@ const mockPerfumes: Product[] = [
     stock: 18,
     sku: "BPP-OSM-70",
     image:
-      "https://blueperfumery.com/wp-content/uploads/2023/05/oud-satin-mood.jpg",
+      "https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop&crop=center",
     notes: ["ud", "gül", "vanilya", "benjamin"],
     characteristics: ["oryantal", "zengin", "tatlı", "odunsu"],
     ageRange: { min: 20, max: 50 },
@@ -120,7 +120,7 @@ const mockPerfumes: Product[] = [
     stock: 12,
     sku: "BPP-LC-100",
     image:
-      "https://blueperfumery.com/wp-content/uploads/2023/05/lost-cherry.jpg",
+      "https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop&crop=center",
     notes: ["kiraz", "badem", "tonka fasulyesi", "peru balsamı"],
     characteristics: ["tatlı", "meyveli", "gurme"],
     ageRange: { min: 20, max: 45 },
@@ -141,7 +141,8 @@ const mockPerfumes: Product[] = [
     status: "active",
     stock: 8,
     sku: "BPL-OW-50",
-    image: "https://blueperfumery.com/wp-content/uploads/2023/05/oud-wood.jpg",
+    image:
+      "https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop&crop=center",
     notes: ["ud", "gül ağacı", "kakule", "sandal ağacı"],
     characteristics: ["odunsu", "baharatlı", "lüks", "rafine"],
     ageRange: { min: 25, max: 55 },
@@ -163,7 +164,7 @@ const mockPerfumes: Product[] = [
     stock: 35,
     sku: "BPC-CH-50",
     image:
-      "https://blueperfumery.com/wp-content/uploads/2023/05/chanel-chance.jpg",
+      "https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop&crop=center",
     notes: ["pembe biber", "yasemin", "paçuli"],
     characteristics: ["çiçeksi", "ferah", "baharatlı"],
     ageRange: { min: 19, max: 45 },
@@ -184,7 +185,8 @@ const mockPerfumes: Product[] = [
     status: "active",
     stock: 42,
     sku: "BPU-INV-50",
-    image: "https://blueperfumery.com/wp-content/uploads/2023/05/invictus.jpg",
+    image:
+      "https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop&crop=center",
     notes: ["greyfurt", "deniz", "guaiac ağacı"],
     characteristics: ["ferah", "deniz", "odunsu"],
     ageRange: { min: 20, max: 35 },
@@ -206,7 +208,7 @@ const mockPerfumes: Product[] = [
     stock: 6,
     sku: "BPA-BA-30",
     image:
-      "https://blueperfumery.com/wp-content/uploads/2023/05/black-afgano.jpg",
+      "https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop&crop=center",
     notes: ["kenevir", "kahve", "ud", "tütün"],
     characteristics: ["reçineli", "karanlık", "yoğun", "bağımlılık yapıcı"],
     ageRange: { min: 28, max: 55 },
@@ -228,7 +230,7 @@ const mockPerfumes: Product[] = [
     stock: 28,
     sku: "BPC-LW-50",
     image:
-      "https://blueperfumery.com/wp-content/uploads/2023/05/libre-woman.jpg",
+      "https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop&crop=center",
     notes: ["lavanta", "portakal çiçeği", "vanilya", "misk"],
     characteristics: ["çiçeksi", "warm", "ferah"],
     ageRange: { min: 20, max: 40 },
@@ -250,7 +252,7 @@ const mockPerfumes: Product[] = [
     stock: 22,
     sku: "BPP-CB-120",
     image:
-      "https://blueperfumery.com/wp-content/uploads/2023/05/cedrat-boise.jpg",
+      "https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop&crop=center",
     notes: ["narenciye", "sedir", "deri", "vanilya"],
     characteristics: ["ferah", "odunsu", "narenciyeli", "modern"],
     ageRange: { min: 22, max: 45 },
@@ -271,7 +273,8 @@ const mockPerfumes: Product[] = [
     status: "active",
     stock: 14,
     sku: "BPA-LAL-75",
-    image: "https://blueperfumery.com/wp-content/uploads/2023/05/lalibela.jpg",
+    image:
+      "https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop&crop=center",
     notes: ["akgünlük", "vanilya", "misk", "badem"],
     characteristics: ["günlük", "ruhani", "tatlı", "reçineli"],
     ageRange: { min: 28, max: 55 },
