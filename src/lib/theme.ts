@@ -137,6 +137,7 @@ export const theme: ThemeConfig = {
     colorTextSecondary: accessibleColors.textSecondary,
     colorTextTertiary: accessibleColors.textTertiary,
     colorTextQuaternary: accessibleColors.textQuaternary,
+    colorTextLightSolid: "#ffffff", // Aktif pagination item text rengi için
 
     // Focus and interaction colors
     colorPrimaryBorderHover: accessibleColors.primaryHover,

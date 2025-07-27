@@ -52,3 +52,9 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+/* Custom CSS for pagination active item text color */
+.ant-pagination-item-active a,
+.ant-pagination-item-active a:hover {
+  color: #ffffff !important;
+}
