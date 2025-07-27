@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Typography,
@@ -149,14 +149,14 @@ export const ProductsPage: React.FC = () => {
   // Local state for search input (debounced)
   const [searchValue, setSearchValue] = useState(filters.search || "");
 
-  // // Debounced search effect
-  // useEffect(() => {
-  //   const timeoutId = setTimeout(() => {
-  //     handleFilterChange({ search: searchValue });
-  //   }, 300);
+  // Debounced search effect
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      handleFilterChange({ search: searchValue });
+    }, 300);
 
-  //   return () => clearTimeout(timeoutId);
-  // }, [searchValue]);
+    return () => clearTimeout(timeoutId);
+  }, [searchValue]);
 
   // Navigation handlers
   const handleProductClick = (productId: string) => {
