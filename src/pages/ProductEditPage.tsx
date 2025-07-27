@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   Card,
   Typography,
@@ -10,7 +9,6 @@ import {
   InputNumber,
   Select,
   Space,
-  message,
   Row,
   Col,
   Spin,
@@ -21,17 +19,7 @@ import {
   SaveOutlined,
   EditOutlined,
 } from "@ant-design/icons";
-import {
-  fetchProductById,
-  updateProduct,
-  clearSelectedProduct,
-  clearError,
-} from "../store/slices/productsSlice";
-import {
-  selectSelectedProduct,
-  selectProductsLoading,
-  selectProductsError,
-} from "../store/selectors/productsSelectors";
+import { useProduct, useUpdateProduct } from "../hooks";
 import type { UpdateProductData } from "../types";
 
 const { Title } = Typography;
@@ -41,24 +29,15 @@ const { TextArea } = Input;
 export const ProductEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
-  const product = useAppSelector(selectSelectedProduct);
-  const loading = useAppSelector(selectProductsLoading);
-  const error = useAppSelector(selectProductsError);
+  // React Query hooks for data fetching
+  const {
+    data: product,
+    isLoading: loading,
+    error,
+  } = useProduct(id || "", !!id);
+  const updateProductMutation = useUpdateProduct();
   const [form] = Form.useForm();
-
-  // Fetch product data when component mounts
-  useEffect(() => {
-    if (id) {
-      dispatch(fetchProductById(id));
-    }
-
-    // Cleanup when component unmounts
-    return () => {
-      dispatch(clearSelectedProduct());
-    };
-  }, [dispatch, id]);
 
   // Update form when product data is loaded
   useEffect(() => {
@@ -88,13 +67,10 @@ export const ProductEditPage: React.FC = () => {
         ...values,
         id: product.id,
       };
-      const result = await dispatch(updateProduct(updateData)).unwrap();
-      message.success(
-        `Product "${result.name}" has been updated successfully!`
-      );
-      navigate(`/products/${result.id}`);
+      const result = await updateProductMutation.mutateAsync(updateData);
+      navigate(`/products/${result.data.id}`);
     } catch {
-      message.error("Failed to update product. Please try again.");
+      // Error notification is handled by the mutation hook
     }
   };
 
@@ -111,10 +87,6 @@ export const ProductEditPage: React.FC = () => {
         image: product.image,
       });
     }
-  };
-
-  const handleErrorDismiss = () => {
-    dispatch(clearError());
   };
 
   // Loading state
@@ -144,10 +116,10 @@ export const ProductEditPage: React.FC = () => {
 
         <Alert
           message="Error Loading Product"
-          description={error}
+          description={
+            error instanceof Error ? error.message : "Failed to load product"
+          }
           type="error"
-          closable
-          onClose={handleErrorDismiss}
           action={
             <Button
               size="small"

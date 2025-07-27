@@ -1,68 +1,30 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import { dashboardApi } from "../../services/mock-api";
+import { createSlice } from "@reduxjs/toolkit";
 
-// State interface
-export interface DashboardStats {
-  totalUsers: number;
-  totalProducts: number;
-  activeUsers: number;
-  activeProducts: number;
-  revenue: number;
-  growth: number;
-}
-
+// State interface - minimal UI state for dashboard
 export interface DashboardState {
-  stats: DashboardStats | null;
-  loading: boolean;
-  error: string | null;
+  refreshCount: number; // For forcing manual refresh if needed
 }
 
 // Initial state
 const initialState: DashboardState = {
-  stats: null,
-  loading: false,
-  error: null,
+  refreshCount: 0,
 };
 
-// Async thunks
-export const fetchDashboardStats = createAsyncThunk(
-  "dashboard/fetchStats",
-  async () => {
-    const response = await dashboardApi.getStats();
-    return response.data;
-  }
-);
-
-// Slice
+// Slice - minimal UI state management
 const dashboardSlice = createSlice({
   name: "dashboard",
   initialState,
   reducers: {
-    clearError: (state) => {
-      state.error = null;
+    incrementRefreshCount: (state) => {
+      state.refreshCount += 1;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchDashboardStats.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(
-        fetchDashboardStats.fulfilled,
-        (state, action: PayloadAction<DashboardStats>) => {
-          state.loading = false;
-          state.stats = action.payload;
-        }
-      )
-      .addCase(fetchDashboardStats.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || "Failed to fetch dashboard stats";
-      });
+    resetRefreshCount: (state) => {
+      state.refreshCount = 0;
+    },
   },
 });
 
-export const { clearError } = dashboardSlice.actions;
+export const { incrementRefreshCount, resetRefreshCount } =
+  dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

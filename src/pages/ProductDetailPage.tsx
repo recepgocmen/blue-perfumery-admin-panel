@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Card,
   Typography,
@@ -16,30 +16,17 @@ import {
   Statistic,
   Divider,
   message,
-  Modal,
 } from "antd";
 import {
   ArrowLeftOutlined,
   EditOutlined,
-  DeleteOutlined,
   ShoppingCartOutlined,
   DollarOutlined,
   HeartOutlined,
   HeartFilled,
-  ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import type { AppDispatch, RootState } from "../store";
-import {
-  fetchProductById,
-  deleteProduct,
-  clearSelectedProduct,
-  clearError,
-} from "../store/slices/productsSlice";
-import {
-  selectSelectedProduct,
-  selectProductsLoading,
-  selectProductsError,
-} from "../store/selectors/productsSelectors";
+import type { RootState } from "../store";
+import { useProduct } from "../hooks";
 import {
   toggleFavorite,
   clearError as clearFavoritesError,
@@ -54,30 +41,20 @@ const { Title, Paragraph, Text } = Typography;
 export const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
-  // Redux selectors
-  const product = useSelector(selectSelectedProduct);
-  const loading = useSelector(selectProductsLoading);
-  const error = useSelector(selectProductsError);
+  // React Query hooks for data fetching
+  const {
+    data: product,
+    isLoading: loading,
+    error,
+  } = useProduct(id || "", !!id);
 
   // Favorites selectors - following Context7 selector patterns
   const isProductFavorited = useSelector((state: RootState) =>
     product ? selectIsProductFavorited(state, product.id) : false
   );
   const favoritesError = useSelector(selectFavoritesError);
-
-  // Fetch product data when component mounts or ID changes
-  useEffect(() => {
-    if (id) {
-      dispatch(fetchProductById(id));
-    }
-
-    // Cleanup when component unmounts
-    return () => {
-      dispatch(clearSelectedProduct());
-    };
-  }, [dispatch, id]);
 
   // Navigation handlers - following Context7 useNavigate patterns
   const handleBackToProducts = () => {
@@ -92,34 +69,6 @@ export const ProductDetailPage: React.FC = () => {
     if (product) {
       navigate(`/products/${product.id}/edit`);
     }
-  };
-
-  const handleDeleteProduct = async () => {
-    if (!product) return;
-
-    Modal.confirm({
-      title: "Delete Product",
-      icon: <ExclamationCircleOutlined />,
-      content: `Are you sure you want to delete "${product.name}"? This action cannot be undone.`,
-      okText: "Delete",
-      okType: "danger",
-      cancelText: "Cancel",
-      onOk: async () => {
-        try {
-          await dispatch(deleteProduct(product.id)).unwrap();
-          message.success(
-            `Product "${product.name}" has been deleted successfully`
-          );
-          navigate("/products");
-        } catch {
-          message.error("Failed to delete product. Please try again.");
-        }
-      },
-    });
-  };
-
-  const handleErrorDismiss = () => {
-    dispatch(clearError());
   };
 
   // Favorite handlers - following Context7 event handling patterns
@@ -166,10 +115,10 @@ export const ProductDetailPage: React.FC = () => {
 
         <Alert
           message="Error Loading Product"
-          description={error}
+          description={
+            error instanceof Error ? error.message : "Failed to load product"
+          }
           type="error"
-          closable
-          onClose={handleErrorDismiss}
           action={
             <Button
               size="small"
@@ -288,13 +237,6 @@ export const ProductDetailPage: React.FC = () => {
                 onClick={handleEditProduct}
               >
                 Edit Product
-              </Button>
-              <Button
-                danger
-                icon={<DeleteOutlined />}
-                onClick={handleDeleteProduct}
-              >
-                Delete
               </Button>
             </Space>
           </Col>

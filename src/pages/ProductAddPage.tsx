@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { useCreateProduct } from "../hooks/useProducts";
+import type { CreateProductData } from "../types";
 import {
   Card,
   Typography,
@@ -20,9 +21,6 @@ import {
   SaveOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { createProduct } from "../store/slices/productsSlice";
-import { selectProductsLoading } from "../store/selectors/productsSelectors";
-import type { CreateProductData } from "../types";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -30,9 +28,8 @@ const { TextArea } = Input;
 
 export const ProductAddPage: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const loading = useAppSelector(selectProductsLoading);
   const [form] = Form.useForm();
+  const createProductMutation = useCreateProduct();
 
   const handleBack = () => {
     navigate(-1);
@@ -40,10 +37,11 @@ export const ProductAddPage: React.FC = () => {
 
   const handleSubmit = async (values: CreateProductData) => {
     try {
-      const result = await dispatch(createProduct(values)).unwrap();
-      message.success(`Parfüm "${result.name}" başarıyla oluşturuldu!`);
-      navigate(`/products/${result.id}`);
-    } catch {
+      const result = await createProductMutation.mutateAsync(values);
+      message.success(`Parfüm "${values.name}" başarıyla oluşturuldu!`);
+      navigate(`/products/${result.data.id}`);
+    } catch (error) {
+      console.error("Failed to create product:", error);
       message.error(
         "Parfüm oluşturulurken hata oluştu. Lütfen tekrar deneyin."
       );
@@ -52,6 +50,10 @@ export const ProductAddPage: React.FC = () => {
 
   const handleReset = () => {
     form.resetFields();
+  };
+
+  const handleCancel = () => {
+    navigate("/products");
   };
 
   // Generate SKU based on brand and name
@@ -350,7 +352,7 @@ export const ProductAddPage: React.FC = () => {
               >
                 <Input
                   placeholder="Marka ve ürün adından otomatik oluşturulacak"
-                  disabled={loading}
+                  disabled={createProductMutation.isPending}
                 />
               </Form.Item>
 
@@ -514,17 +516,26 @@ export const ProductAddPage: React.FC = () => {
           {/* Form Actions */}
           <div style={{ marginTop: 32, textAlign: "center" }}>
             <Space size="large">
-              <Button onClick={handleReset} disabled={loading}>
+              <Button
+                onClick={handleReset}
+                disabled={createProductMutation.isPending}
+              >
                 Formu Sıfırla
               </Button>
               <Button
                 type="primary"
                 htmlType="submit"
                 icon={<SaveOutlined />}
-                loading={loading}
+                loading={createProductMutation.isPending}
                 size="large"
               >
                 Parfüm Oluştur
+              </Button>
+              <Button
+                onClick={handleCancel}
+                disabled={createProductMutation.isPending}
+              >
+                İptal
               </Button>
             </Space>
           </div>

@@ -102,7 +102,7 @@ export const AdminLayout: React.FC = () => {
           }}
         >
           <h2 style={{ margin: 0, color: token.colorPrimary }}>
-            {collapsed ? "AP" : "Admin Panel"}
+            {collapsed ? "BP" : "Admin Panel"}
           </h2>
         </div>
         <Menu

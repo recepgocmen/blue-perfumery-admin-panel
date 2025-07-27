@@ -7,6 +7,8 @@ import { ProductAddPage } from "../pages/ProductAddPage.tsx";
 import { ProductEditPage } from "../pages/ProductEditPage.tsx";
 import { UsersPage } from "../pages/UsersPage";
 import { UserDetailPage } from "../pages/UserDetailPage";
+import { UserAddPage } from "../pages/UserAddPage";
+import { UserEditPage } from "../pages/UserEditPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 
 export const router = createBrowserRouter([
@@ -47,8 +49,16 @@ export const router = createBrowserRouter([
             element: <UsersPage />,
           },
           {
+            path: "add",
+            element: <UserAddPage />,
+          },
+          {
             path: ":id",
             element: <UserDetailPage />,
+          },
+          {
+            path: ":id/edit",
+            element: <UserEditPage />,
           },
         ],
       },

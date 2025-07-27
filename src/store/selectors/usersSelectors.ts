@@ -4,27 +4,7 @@ import type { RootState } from "../index";
 // Base selector
 const selectUsersState = (state: RootState) => state.users;
 
-// Memoized selectors
-export const selectUsers = createSelector(
-  [selectUsersState],
-  (usersState) => usersState.users
-);
-
-export const selectSelectedUser = createSelector(
-  [selectUsersState],
-  (usersState) => usersState.selectedUser
-);
-
-export const selectUsersLoading = createSelector(
-  [selectUsersState],
-  (usersState) => usersState.loading
-);
-
-export const selectUsersError = createSelector(
-  [selectUsersState],
-  (usersState) => usersState.error
-);
-
+// Memoized selectors for UI state only
 export const selectUsersPagination = createSelector(
   [selectUsersState],
   (usersState) => usersState.pagination
@@ -40,17 +20,6 @@ export const selectUsersSortParams = createSelector(
   (usersState) => usersState.sortParams
 );
 
-// Computed selectors
-export const selectUserById = createSelector(
-  [selectUsers, (_state: RootState, userId: string) => userId],
-  (users, userId) => users.find((user) => user.id === userId)
-);
-
-export const selectActiveUsers = createSelector([selectUsers], (users) =>
-  users.filter((user) => user.status === "active")
-);
-
-export const selectUsersByRole = createSelector(
-  [selectUsers, (_state: RootState, role: string) => role],
-  (users, role) => users.filter((user) => user.role === role)
-);
+// Note: Data-related selectors (users list, individual users, etc.)
+// have been moved to React Query hooks in src/hooks/useUsers.ts
+// Use useUsers() and useUser() hooks instead of Redux selectors for data

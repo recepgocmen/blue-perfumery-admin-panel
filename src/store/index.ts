@@ -1,5 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/query";
 import usersReducer from "./slices/usersSlice";
 import productsReducer from "./slices/productsSlice";
 import dashboardReducer from "./slices/dashboardSlice";
@@ -19,9 +18,6 @@ export const store = configureStore({
       },
     }),
 });
-
-// Enable listener behavior for the store
-setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Card,
   Typography,
@@ -12,33 +12,42 @@ import {
   Tag,
   Statistic,
   Alert,
+  Spin,
+  Tabs,
+  message,
 } from "antd";
 import {
   PlusOutlined,
   SearchOutlined,
-  FilterOutlined,
   ClearOutlined,
   EyeOutlined,
+  ShoppingOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  HeartOutlined,
+  HeartFilled,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import type { AppDispatch } from "../store";
+import type { AppDispatch, RootState } from "../store";
 import {
-  fetchProducts,
   setFilters,
-  clearError,
+  setPagination,
+  resetFilters,
 } from "../store/slices/productsSlice";
+import { toggleFavorite } from "../store/slices/favoritesSlice";
 import {
-  selectFilteredProducts,
-  selectProductsLoading,
-  selectProductsError,
-  selectProductsFilters,
-  selectAvailableCategories,
-  selectProductStats,
-} from "../store/selectors/productsSelectors";
+  selectFavoriteProducts,
+  selectFavoritesCount,
+} from "../store/selectors/favoritesSelectors";
+import { useProducts, useDeleteProduct } from "../hooks/useProducts";
 import type { Product, ProductFilters } from "../types";
+import type {
+  TablePaginationConfig,
+  SorterResult,
+} from "antd/es/table/interface";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { Option } = Select;
 const { Search } = Input;
 
@@ -114,30 +123,40 @@ export const ProductsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // Redux selectors
-  const filteredProducts = useSelector(selectFilteredProducts);
-  const loading = useSelector(selectProductsLoading);
-  const error = useSelector(selectProductsError);
-  const filters = useSelector(selectProductsFilters);
-  const availableCategories = useSelector(selectAvailableCategories);
-  const stats = useSelector(selectProductStats);
+  // Redux selectors for UI state
+  const filters = useSelector((state: RootState) => state.products.filters);
+  const pagination = useSelector(
+    (state: RootState) => state.products.pagination
+  );
+  const sortParams = useSelector(
+    (state: RootState) => state.products.sortParams
+  );
+
+  // TanStack Query hooks for data fetching
+  const {
+    data: productsResponse,
+    isLoading,
+    error,
+    refetch,
+  } = useProducts(filters, pagination, sortParams);
+
+  const deleteProductMutation = useDeleteProduct();
+
+  // Favorites selectors - following Context7 selector patterns
+  const favoriteProducts = useSelector(selectFavoriteProducts);
+  const favoritesCount = useSelector(selectFavoritesCount);
 
   // Local state for search input (debounced)
   const [searchValue, setSearchValue] = useState(filters.search || "");
 
-  // Fetch products on component mount
-  useEffect(() => {
-    dispatch(fetchProducts({ filters, pagination: { page: 1, limit: 50 } }));
-  }, [dispatch, filters]);
+  // // Debounced search effect
+  // useEffect(() => {
+  //   const timeoutId = setTimeout(() => {
+  //     handleFilterChange({ search: searchValue });
+  //   }, 300);
 
-  // Debounced search effect
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      handleFilterChange({ search: searchValue });
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchValue]);
+  //   return () => clearTimeout(timeoutId);
+  // }, [searchValue]);
 
   // Navigation handlers
   const handleProductClick = (productId: string) => {
@@ -145,50 +164,83 @@ export const ProductsPage: React.FC = () => {
   };
 
   const handleViewProduct = (productId: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent row click when button is clicked
+    event.stopPropagation();
     navigate(`/products/${productId}`);
   };
 
-  // Filter change handlers
-  const handleFilterChange = (newFilters: Partial<ProductFilters>) => {
-    dispatch(setFilters({ ...filters, ...newFilters }));
-  };
-
-  const handleSearchChange = (value: string) => {
-    setSearchValue(value);
-  };
-
-  const handleClearFilters = () => {
-    setSearchValue("");
-    dispatch(setFilters({}));
-  };
-
-  const handleErrorDismiss = () => {
-    dispatch(clearError());
+  const handleEditProduct = (productId: string) => {
+    navigate(`/products/${productId}/edit`);
   };
 
   const handleAddProduct = () => {
     navigate("/products/add");
   };
 
-  // Table columns configuration
+  // Filter handlers
+  const handleFilterChange = (newFilters: Partial<ProductFilters>) => {
+    dispatch(setFilters({ ...filters, ...newFilters }));
+  };
+
+  const handleClearFilters = () => {
+    dispatch(resetFilters());
+    setSearchValue("");
+  };
+
+  const handleDeleteProductClick = async (
+    productId: string,
+    event: React.MouseEvent
+  ) => {
+    event.stopPropagation(); // Prevent event bubbling to row click
+    try {
+      await deleteProductMutation.mutateAsync(productId);
+    } catch (error) {
+      console.error("Failed to delete product:", error);
+    }
+  };
+
+  // Favorite handlers - following Context7 event handling patterns
+  const handleToggleFavorite = (product: Product, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent event bubbling to row click
+    try {
+      const isCurrentlyFavorited = favoriteProducts.some(
+        (fav) => fav.id === product.id
+      );
+      dispatch(toggleFavorite(product));
+
+      if (isCurrentlyFavorited) {
+        message.success(`${product.name} removed from favorites`);
+      } else {
+        message.success(`${product.name} added to favorites`);
+      }
+    } catch {
+      message.error("Failed to update favorites");
+    }
+  };
+
+  // Get products and derived data
+  const products = productsResponse?.data || [];
+  const totalProducts = productsResponse?.total || 0;
+
+  // Calculate stats from current data
+  const activeProducts = products.filter((p) => p.status === "active").length;
+  const lowStockProducts = products.filter((p) => p.stock < 10);
+
+  // Get unique categories for filter
+  const availableCategories = Array.from(
+    new Set(products.map((p) => p.category))
+  );
+
+  // Table columns
   const columns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      width: 80,
-    },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (name: string, record: Product) => (
+      render: (text: string, record: Product) => (
         <div>
-          <div style={{ fontWeight: 500, color: "#1890ff", cursor: "pointer" }}>
-            {name}
-          </div>
-          <div style={{ fontSize: 12, color: "#666" }}>{record.sku}</div>
+          <strong>{text}</strong>
+          <br />
+          <Text type="secondary">{record.brand}</Text>
         </div>
       ),
     },
@@ -202,224 +254,277 @@ export const ProductsPage: React.FC = () => {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (price: number) => `$${price.toFixed(2)}`,
-      sorter: (a: Product, b: Product) => a.price - b.price,
+      render: (price: number) => `₺${price.toLocaleString()}`,
+      sorter: true,
     },
     {
       title: "Stock",
       dataIndex: "stock",
       key: "stock",
       render: (stock: number) => (
-        <Tag color={stock <= 10 ? "red" : stock <= 20 ? "orange" : "green"}>
+        <Tag color={stock < 10 ? "red" : stock < 20 ? "orange" : "green"}>
           {stock}
         </Tag>
       ),
-      sorter: (a: Product, b: Product) => a.stock - b.stock,
+      sorter: true,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (status: string) => {
-        const colorMap = {
-          active: "green",
-          inactive: "orange",
-          discontinued: "red",
-        };
-        return (
-          <Tag color={colorMap[status as keyof typeof colorMap]}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </Tag>
-        );
+      render: (status: Product["status"]) => {
+        const color =
+          status === "active"
+            ? "green"
+            : status === "inactive"
+            ? "orange"
+            : "red";
+        return <Tag color={color}>{status}</Tag>;
       },
     },
     {
       title: "Actions",
       key: "actions",
-      render: (_: unknown, record: Product) => (
-        <Space>
-          <Button
-            type="link"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={(e) => handleViewProduct(record.id, e)}
-          >
-            View
-          </Button>
-          <Button type="link" size="small">
-            Edit
-          </Button>
-          <Button type="link" size="small" danger>
-            Delete
-          </Button>
-        </Space>
-      ),
+      render: (_: unknown, record: Product) => {
+        const isFavorited = favoriteProducts.some(
+          (fav) => fav.id === record.id
+        );
+
+        return (
+          <Space>
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              onClick={(e) => handleViewProduct(record.id, e)}
+              title="View"
+            />
+            <Button
+              type="text"
+              icon={isFavorited ? <HeartFilled /> : <HeartOutlined />}
+              onClick={(e) => handleToggleFavorite(record, e)}
+              title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+              style={{
+                color: isFavorited ? "#ff4d4f" : undefined,
+              }}
+            />
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => handleEditProduct(record.id)}
+              title="Edit"
+            />
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={(e) => handleDeleteProductClick(record.id, e)}
+              loading={deleteProductMutation.isPending}
+              title="Delete"
+            />
+          </Space>
+        );
+      },
     },
   ];
 
-  // Check if any filters are active
-  const hasActiveFilters = !!(
-    filters.search ||
-    filters.category ||
-    filters.status
-  );
+  // Handle table change (pagination, sorting)
+  const handleTableChange = (
+    paginationConfig: TablePaginationConfig,
+    sorter: SorterResult<Product> | SorterResult<Product>[]
+  ) => {
+    // Update pagination
+    if (paginationConfig) {
+      dispatch(
+        setPagination({
+          page: paginationConfig.current || 1,
+          limit: paginationConfig.pageSize || 10,
+        })
+      );
+    }
+
+    // Update sorting
+    const singleSorter = Array.isArray(sorter) ? sorter[0] : sorter;
+    if (singleSorter?.field) {
+      console.log("Sorting:", singleSorter.field, singleSorter.order);
+    }
+  };
+
+  if (error) {
+    return (
+      <Card>
+        <Alert
+          message="Error"
+          description={error.message || "Failed to load products"}
+          type="error"
+          action={
+            <Button size="small" danger onClick={() => refetch()}>
+              Retry
+            </Button>
+          }
+        />
+      </Card>
+    );
+  }
 
   return (
     <div>
-      {/* Page Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 24,
-        }}
-      >
-        <div>
+      {/* Header */}
+      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+        <Col>
           <Title level={2} style={{ margin: 0 }}>
             Products
           </Title>
-          <div style={{ marginTop: 8, color: "#666" }}>
-            {stats.total} products found
-            {hasActiveFilters && " (filtered)"}
-          </div>
-        </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleAddProduct}
-        >
-          Add Product
-        </Button>
-      </div>
+        </Col>
+        <Col>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleAddProduct}
+          >
+            Add Product
+          </Button>
+        </Col>
+      </Row>
 
-      {/* Statistics Cards */}
+      {/* Stats */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
               title="Total Products"
-              value={stats.total}
-              valueStyle={{ color: "#1890ff" }}
+              value={totalProducts}
+              prefix={<ShoppingOutlined />}
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Active"
-              value={stats.active}
-              valueStyle={{ color: "#52c41a" }}
+              title="Active Products"
+              value={activeProducts}
+              prefix={<ShoppingOutlined />}
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="Favorite Products"
+              value={favoritesCount}
+              prefix={<HeartFilled />}
+              valueStyle={{
+                color: favoritesCount > 0 ? "#ff4d4f" : undefined,
+              }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
               title="Low Stock"
-              value={stats.lowStock}
-              valueStyle={{ color: "#faad14" }}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Avg Price"
-              value={stats.averagePrice}
-              precision={2}
-              prefix="$"
-              valueStyle={{ color: "#722ed1" }}
+              value={lowStockProducts.length}
+              valueStyle={{
+                color: lowStockProducts.length > 0 ? "#cf1322" : undefined,
+              }}
             />
           </Card>
         </Col>
       </Row>
 
-      {/* Error Alert */}
-      {error && (
-        <Alert
-          message="Error"
-          description={error}
-          type="error"
-          closable
-          onClose={handleErrorDismiss}
-          style={{ marginBottom: 16 }}
-        />
-      )}
-
       {/* Filters */}
-      <Card style={{ marginBottom: 16 }}>
-        <Row gutter={[16, 16]} align="middle">
+      <Card style={{ marginBottom: 24 }}>
+        <Row gutter={16} align="middle">
           <Col>
             <SearchInput
               value={searchValue}
-              onChange={handleSearchChange}
-              placeholder="Search by name, description, or SKU..."
+              onChange={setSearchValue}
+              placeholder="Search products..."
             />
           </Col>
           <Col>
             <CategoryFilter
               value={filters.category}
-              onChange={(value) => handleFilterChange({ category: value })}
+              onChange={(category) => handleFilterChange({ category })}
               categories={availableCategories}
             />
           </Col>
           <Col>
             <StatusFilter
               value={filters.status}
-              onChange={(value) => handleFilterChange({ status: value })}
+              onChange={(status) => handleFilterChange({ status })}
             />
           </Col>
-          {hasActiveFilters && (
-            <Col>
-              <Button icon={<ClearOutlined />} onClick={handleClearFilters}>
-                Clear Filters
-              </Button>
-            </Col>
-          )}
-          <Col flex="auto" style={{ textAlign: "right" }}>
-            <Space>
-              <FilterOutlined />
-              <span style={{ color: "#666" }}>
-                {hasActiveFilters ? "Filters Applied" : "No Filters"}
-              </span>
-            </Space>
+          <Col>
+            <Button icon={<ClearOutlined />} onClick={handleClearFilters}>
+              Clear Filters
+            </Button>
           </Col>
         </Row>
       </Card>
 
-      {/* Products Table */}
+      {/* Products Table with Tabs */}
       <Card>
-        <Table
-          columns={columns}
-          dataSource={filteredProducts}
-          rowKey="id"
-          loading={loading}
-          onRow={(record) => ({
-            onClick: () => handleProductClick(record.id),
-            style: { cursor: "pointer" },
-            className: "hoverable-row",
-          })}
-          pagination={{
-            total: filteredProducts.length,
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`,
-          }}
-          scroll={{ x: 800 }}
+        <Tabs
+          defaultActiveKey="all"
+          items={[
+            {
+              key: "all",
+              label: `All Products (${totalProducts})`,
+              children: (
+                <Spin spinning={isLoading}>
+                  <Table
+                    columns={columns}
+                    dataSource={products}
+                    rowKey="id"
+                    pagination={{
+                      current: pagination.page,
+                      pageSize: pagination.limit,
+                      total: totalProducts,
+                      showSizeChanger: true,
+                      showQuickJumper: true,
+                      showTotal: (total, range) =>
+                        `${range[0]}-${range[1]} of ${total} products`,
+                    }}
+                    onChange={handleTableChange}
+                    onRow={(record) => ({
+                      onClick: () => handleProductClick(record.id),
+                      style: { cursor: "pointer" },
+                    })}
+                  />
+                </Spin>
+              ),
+            },
+            {
+              key: "favorites",
+              label: `Favorite Products (${favoritesCount})`,
+              children: (
+                <Table
+                  columns={columns}
+                  dataSource={favoriteProducts}
+                  rowKey="id"
+                  pagination={{
+                    pageSize: 10,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} of ${total} favorites`,
+                  }}
+                  onRow={(record) => ({
+                    onClick: () => handleProductClick(record.id),
+                    style: { cursor: "pointer" },
+                  })}
+                  locale={{
+                    emptyText:
+                      favoriteProducts.length === 0
+                        ? "No favorite products yet. Click the heart icon to add products to favorites!"
+                        : "No favorites match current filters",
+                  }}
+                />
+              ),
+            },
+          ]}
         />
       </Card>
-
-      {/* Add global hover styles for table rows */}
-      <style>
-        {`
-          .ant-table-tbody > tr.hoverable-row:hover > td {
-            background-color: #f0f2ff !important;
-          }
-        `}
-      </style>
     </div>
   );
 };
