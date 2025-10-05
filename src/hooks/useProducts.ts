@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notification } from "antd";
 import { useDispatch } from "react-redux";
-import { productApi } from "../services/mock-api";
+import { productApi } from "../services/api";
 import { removeFromFavorites } from "../store/slices/favoritesSlice";
 import type {
   ProductFilters,

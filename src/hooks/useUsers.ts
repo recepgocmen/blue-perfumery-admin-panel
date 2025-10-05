@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notification } from "antd";
-import { userApi } from "../services/mock-api";
+import { userApi } from "../services/api"; // Changed from mock-api to real API
 import type {
   UserFilters,
   PaginationParams,

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { dashboardApi } from "../services/mock-api";
+import { dashboardApi } from "../services/api";
 
 export const useDashboardStats = () => {
   return useQuery({
