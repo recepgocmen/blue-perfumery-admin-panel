@@ -10,6 +10,7 @@ import { UserDetailPage } from "../pages/UserDetailPage";
 import { UserAddPage } from "../pages/UserAddPage";
 import { UserEditPage } from "../pages/UserEditPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
+import ChatSessionsPage from "../pages/ChatSessionsPage";
 
 export const router = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ export const router = createBrowserRouter([
             element: <UserEditPage />,
           },
         ],
+      },
+      {
+        path: "chat-sessions",
+        element: <ChatSessionsPage />,
       },
     ],
   },

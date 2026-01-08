@@ -19,6 +19,7 @@ import {
   UserOutlined,
   LogoutOutlined,
   SettingOutlined,
+  MessageOutlined,
 } from "@ant-design/icons";
 
 const { Header, Sider, Content } = Layout;
@@ -49,6 +50,12 @@ const menuItems: MenuItem[] = [
     icon: <UserOutlined />,
     label: "Users",
     path: "/users",
+  },
+  {
+    key: "chat-sessions",
+    icon: <MessageOutlined />,
+    label: "Chat Sessions",
+    path: "/chat-sessions",
   },
 ];
 
@@ -86,6 +93,7 @@ export const AdminLayout: React.FC = () => {
     if (path === "/") return "dashboard";
     if (path.startsWith("/products")) return "products";
     if (path.startsWith("/users")) return "users";
+    if (path.startsWith("/chat-sessions")) return "chat-sessions";
     return "dashboard";
   };
 
